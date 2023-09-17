@@ -3,14 +3,15 @@ import requests
 import pygit2
 import pandas as pd
 import numpy as np
-from settings import ROOT_DIR, HEADERS
+from settings import ROOTDIR, HEADERS, VALID_RN_NUM, VALID_LINK_NUM
 from bs4 import BeautifulSoup
 from markdown import markdown
 from typing import List, Callable,  Tuple, TypeVar
-import traceback
+import re
 
 
 Time = TypeVar("Time")
+Markdown = TypeVar("Markdown")
 
 class MyRemoteCallbacks(pygit2.RemoteCallbacks):
     def transfer_progress(self, stats):
@@ -21,11 +22,68 @@ def valid(commit, lastest, oldest):
     return oldest.to_pydatetime().timestamp() <= commit.commit_time <= lastest.to_pydatetime().timestamp()
 
 
-def traverse_repos(func: Callable[[str, str], None]) -> None:
-    """ This function do func in range of all repositories in Repos.csv file"""
+def crawl_repos(result_path: str) -> None:
+    """ Crawl Github repo with highest star number 
+        (Assume that the higher star number the higher project quality) 
+        Store result in result_path """
 
-    repos_path = os.path.join(ROOT_DIR, "Repos.csv")
-    repos = pd.read_csv(repos_path)
+    result = []
+    for i in range(50):
+        print(i + 1)
+        resp = requests.get(f"https://gitstar-ranking.com/repositories?page={i + 1}")
+        soup = BeautifulSoup(resp.text, "html.parser")
+        repos_container = soup.find("div", {"class": "row"})
+        repos = repos_container.find_all('a')
+        for repo in repos:
+            result.append('/'.join(repo["href"].split('/')[-2:]))       
+    result = pd.DataFrame({"Repo": result})
+    result.to_csv(result_path)
+
+
+def filter_repos(input_path: str, result_path: str) -> None:
+    candidates = pd.read_csv(input_path)
+    commit_link = "https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/commit\/[a-zA-Z0-9]+"
+    pr_link = "https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/pull\/[0-9]+"
+    issue_link = "https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/issues\/[0-9]+"
+
+    def validate(rn: Markdown) -> bool:
+        if not rn:
+            return False
+        html = markdown(rn)
+        soup = BeautifulSoup(html, "html.parser")
+        all_a = soup.find_all('a')
+        valid_link_num = 0
+        for a in all_a:
+            try:
+                link = a["href"]
+                if re.match(commit_link, link) or re.match(pr_link, link) or re.match(issue_link, link):
+                    valid_link_num += 1
+            except KeyError:
+                continue
+        if valid_link_num >= VALID_LINK_NUM:
+            return True
+        else:
+            return False
+        
+    valid_repo = []
+    for candidate in candidates["Repo"]:
+        print(candidate)
+        rns = github_api(candidate, "releases", func=lambda el: el["body"])
+        if len(rns) <= VALID_RN_NUM: continue
+        num_valid_rn = 0
+        for rn in rns:
+            if validate(rn):
+                num_valid_rn += 1
+        if num_valid_rn >= VALID_RN_NUM:
+            valid_repo.append(candidate)
+            df = pd.DataFrame({"Repo": valid_repo})
+            df.to_csv()
+
+
+def traverse_repos(repo_list_path: str, func: Callable[[str, str], None]) -> None:
+    """ This function do func in range of all repositories in repo list file"""
+
+    repos = pd.read_csv(repo_list_path)
     error_log = open("error_log.txt", "a+")
     for repo in repos["Repo"]:
         try:
@@ -88,7 +146,7 @@ def crawl_cm(repo: str) -> List[str]:
     """ Crawl all commits in repo """
 
     folder = repo.replace('/', '_')
-    path = os.path.join(ROOT_DIR, "repos", folder)
+    path = os.path.join(ROOTDIR, "repos", folder)
     assert os.path.exists(path)
     cmd = f""" cd {path} 
             git branch -a"""
@@ -127,6 +185,7 @@ def crawl_cm(repo: str) -> List[str]:
 
 def cm_spliter(message: str) -> Tuple[str, str]:
     """ Split commit into commit summary (the first line) and follow by commit description """
+    
     try:
         # Convert markdown into html
         html = markdown(message)
@@ -144,7 +203,7 @@ def clone_repos(repo: str) -> None:
     """ Clone github repository """
 
     folder = repo.replace('/', '_')
-    path = os.path.join(ROOT_DIR, "repos", folder)
+    path = os.path.join(ROOTDIR, "repos", folder)
     pygit2.clone_repository(f"https://github.com/{repo}", path, callbacks=MyRemoteCallbacks())
     
 
@@ -159,7 +218,7 @@ def build_rn_info(repo: str) -> None:
         print("Crawl release notes done")
         assert rn_info is not None
         rn_info = pd.DataFrame(rn_info)
-        folder_path = os.path.join(ROOT_DIR, "data", folder)
+        folder_path = os.path.join(ROOTDIR, "data", folder)
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
         rn_info_path = os.path.join(folder_path, "rn_info.csv")
@@ -174,7 +233,7 @@ def build_cm_info(repo: str) -> None:
     folder = repo.replace('/', '_')
     print("Repo:", repo)
     try:
-        folder_path = os.path.join(ROOT_DIR, "data", folder)
+        folder_path = os.path.join(ROOTDIR, "data", folder)
         print("Start load commits")
         commits = crawl_cm(repo)
         print("Commits loaded")
@@ -214,7 +273,7 @@ def build_pr_info(repo: str) -> None:
         print("Crawl pull requests done")
         assert pr_info is not None
         pr_info = pd.DataFrame(pr_info)
-        folder_path = os.path.join(ROOT_DIR, "data", folder)
+        folder_path = os.path.join(ROOTDIR, "data", folder)
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
         pr_info_path = os.path.join(folder_path, "pr_info.csv")
@@ -234,7 +293,7 @@ def build_issue_info(repo: str) -> None:
         issue_info = crawl_issue(repo)
         print("Crawl issues done")
         issue_info = pd.DataFrame(issue_info)
-        folder_path = os.path.join(ROOT_DIR, "data", folder)
+        folder_path = os.path.join(ROOTDIR, "data", folder)
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
         issue_info_path = os.path.join(folder_path, "issue_info.csv")
@@ -242,3 +301,13 @@ def build_issue_info(repo: str) -> None:
     except Exception as e:
         print("Wrong implement at build_issue_info function")
         raise e
+
+
+def make_data() -> None:
+    crawl_repos("raw_repos.csv")
+    filter_repos("raw_repos.csv", "valid_repos.csv")
+    traverse_repos("valid_repos.csv", clone_repos)
+    traverse_repos("valid_repos.csv", build_rn_info)
+    traverse_repos("valid_repos.csv", build_cm_info)
+    traverse_repos("valid_repos.csv", build_pr_info)
+    traverse_repos("valid_repos.csv", build_issue_info)
