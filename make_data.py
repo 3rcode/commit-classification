@@ -77,7 +77,7 @@ def filter_repos(input_path: str, result_path: str) -> None:
         if num_valid_rn >= VALID_RN_NUM:
             valid_repo.append(candidate)
             df = pd.DataFrame({"Repo": valid_repo})
-            df.to_csv()
+            df.to_csv(result_path)
 
 
 def traverse_repos(repo_list_path: str, func: Callable[[str, str], None]) -> None:
@@ -101,9 +101,15 @@ def github_api(repo: str, type: str, func: Callable) -> List[str]:
     all_els = []
     while True:
         url =f"https://api.github.com/repos/{repo}/{type}?per_page=100&page={page}"
-        response = requests.get(url, headers=HEADERS)
-        if response.status_code != 200:
-            raise IOError(f"Error while using github api for {repo}")
+        try:
+            response = requests.get(url, headers=HEADERS)
+            response.raise_for_status()
+        except requests.HTTPError as ex:
+            print("Http error")
+            break
+        except requests.Timeout as ex:
+            print("Timeout")
+            break
         els = response.json()
         els_per_page = [func(el) for el in els]
         all_els += els_per_page
@@ -304,7 +310,7 @@ def build_issue_info(repo: str) -> None:
 
 
 def make_data() -> None:
-    crawl_repos("raw_repos.csv")
+    # crawl_repos("raw_repos.csv")
     filter_repos("raw_repos.csv", "valid_repos.csv")
     traverse_repos("valid_repos.csv", clone_repos)
     traverse_repos("valid_repos.csv", build_rn_info)
