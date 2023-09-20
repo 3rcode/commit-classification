@@ -6,7 +6,6 @@
 4,nodejs/node
 5,microsoft/PowerToys
 6,angular/angular
-7,ant-design/ant-design
 8,rust-lang/rust
 9,puppeteer/puppeteer
 10,storybookjs/storybook
@@ -55,7 +54,6 @@
 53,nolimits4web/swiper
 54,evanw/esbuild
 55,Kong/kong
-56,ant-design/ant-design-pro
 57,pingcap/tidb
 58,airbnb/lottie-android
 59,prisma/prisma
@@ -72,13 +70,11 @@
 70,ianstormtaylor/slate
 71,kubernetes/minikube
 72,GoogleChrome/lighthouse
-73,Tencent/weui
 74,hashicorp/consul
 75,fzaninotto/Faker
 76,mobxjs/mobx
 77,JedWatson/react-select
 78,labstack/echo
-79,alibaba/spring-cloud-alibaba
 80,angular/angular-cli
 81,ajaxorg/ace
 82,remy/nodemon
@@ -106,7 +102,6 @@
 104,react-bootstrap/react-bootstrap
 105,vuejs/vuepress
 106,onevcat/Kingfisher
-107,alibaba/Sentinel
 108,grafana/k6
 109,google/ExoPlayer
 110,locustio/locust
@@ -146,9 +141,7 @@
 144,realm/realm-swift
 145,pouchdb/pouchdb
 146,microsoft/react-native-windows
-147,wechaty/wechaty
 148,kubernetes/ingress-nginx
-149,CopyTranslator/CopyTranslator
 150,swagger-api/swagger-codegen
 151,ipfs/kubo
 152,brave/brave-browser
@@ -215,7 +208,6 @@
 213,hyperium/hyper
 214,plouc/nivo
 215,vercel/vercel
-216,ant-design/ant-design-mobile
 217,doctrine/inflector
 218,matrix-org/synapse
 219,Schniz/fnm
@@ -242,7 +234,6 @@
 240,opencv/cvat
 241,apereo/cas
 242,Gallopsled/pwntools
-243,alibaba/formily
 244,MetaMask/metamask-extension
 245,jupyter/notebook
 246,openlayers/openlayers
@@ -305,7 +296,6 @@
 303,webpack/webpack-dev-server
 304,dotansimha/graphql-yoga
 305,facebookresearch/pytorch3d
-306,Tencent/Hippy
 307,reactiveui/ReactiveUI
 308,angular/angularfire
 309,kean/Nuke
@@ -409,3 +399,4 @@
 407,satya164/react-native-tab-view
 408,apertureless/vue-chartjs
 409,cosmos/cosmos-sdk
+
