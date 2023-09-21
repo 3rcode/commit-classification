@@ -107,13 +107,13 @@ def traverse_repos(repo_list_path: str, func: Callable[[str, str], None]) -> Non
     """ This function do func in range of all repositories in repo list file"""
 
     repos = pd.read_csv(repo_list_path)
-    error_log = open("error_log.txt", "a+", encoding="utf-8")
+    error_log = open("error_log.txt", "a+")
     for repo in repos["Repo"]:
         try:
             func(repo)
         except Exception as e:
             error_log.write((f"Repo {repo} encounter error: {e.message if hasattr(e, 'message') else e} "
-                             f"in function {func.__name__}\n"))
+                            f"in function {func.__name__}\n"))
     error_log.close()
 
 
@@ -128,11 +128,9 @@ def github_api(repo: str, component: str, func: Callable) -> List[str]:
             response = requests.get(url, headers=HEADERS)
             response.raise_for_status()
         except requests.HTTPError:
-            print("Http error")
-            break
+            raise IOError("Http Error")
         except requests.Timeout:
-            print("Timeout")
-            break
+            raise IOError("Timeout Error")
         els = response.json()
         els_per_page = [func(el) for el in els]
         all_els += els_per_page
@@ -254,9 +252,9 @@ def build_rn_info(repo: str) -> None:
         assert rn_info is not None
         rn_info = pd.DataFrame(rn_info)
         rn_info.to_csv(rn_info_path)
-    except Exception:
-        print("Wrong implement")
-
+    except Exception as e:
+        print("Wrong implement at build_rn_info")
+        raise e
 
 def build_cm_info(repo: str) -> None:
     """ Get information of commits at repo and store into a csv file at data/[repo] """
@@ -353,8 +351,8 @@ def make_data() -> None:
 
     # crawl_repos("raw_repos.csv")
     # filter_repos("valid_repos.csv", "valid_repos.csv")
-    traverse_repos("valid_repos.csv", clone_repos)
+    # traverse_repos("valid_repos.csv", clone_repos)
     traverse_repos("valid_repos.csv", build_rn_info)
-    traverse_repos("valid_repos.csv", build_cm_info)
-    traverse_repos("valid_repos.csv", build_pr_info)
-    traverse_repos("valid_repos.csv", build_issue_info)
+    # traverse_repos("valid_repos.csv", build_cm_info)
+    # traverse_repos("valid_repos.csv", build_pr_info)
+    # traverse_repos("valid_repos.csv", build_issue_info)
