@@ -1,0 +1,2 @@
+Repo hashicorp/terraform-provider-aws encounter error: Problem while sorting commit info
+Repo facebook/react encounter error: HTTPSConnectionPool(host='api.github.com', port=443): Max retries exceeded with url: /repos/facebook/react/issues?state=all&per_page=100&page=147 (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f9310942850>: Failed to establish a new connection: [Errno 111] Connection refused')) in function build_issue_info

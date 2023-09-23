@@ -21,11 +21,6 @@ class MyRemoteCallbacks(pygit2.RemoteCallbacks):
         print(f'{stats.indexed_objects}/{stats.total_objects}')
 
 
-def valid(commit, latest, oldest):
-    """ Check commit time is between oldest release time and latest release time"""
-    return oldest.to_pydatetime().timestamp() <= commit.commit_time <= latest.to_pydatetime().timestamp()
-
-
 def crawl_repos(result_path: str) -> None:
     """ Crawl Github repo with highest star number 
         (Assume that the higher star number the higher project quality) 
@@ -117,18 +112,21 @@ def traverse_repos(repo_list_path: str, func: Callable[[str, str], None]) -> Non
     error_log.close()
 
 
-def github_api(repo: str, component: str, func: Callable) -> List[str]:
+def github_api(repo: str, component: str, params: str, func: Callable) -> List[str]:
     """ Get all specific component of element has type is type using github_api """
 
     page = 1
     all_els = []
     while True:
-        url =f"https://api.github.com/repos/{repo}/{component}?per_page=100&page={page}"
+        url =f"https://api.github.com/repos/{repo}/{component}?{params}&per_page=100&page={page}"
         try:
             response = requests.get(url, headers=HEADERS)
             response.raise_for_status()
         except requests.HTTPError:
-            raise IOError("Http Error")
+            if response.status_code == 422:
+                break
+            else:
+                raise IOError("Http Error")
         except requests.Timeout:
             raise IOError("Timeout Error")
         els = response.json()
@@ -147,7 +145,7 @@ def crawl_rn(repo: str) -> Callable[[str, str, str, Callable], List[str]]:
 
     print(repo)
     
-    return github_api(repo, component="releases", func=lambda el: el)
+    return github_api(repo, component="releases", params="", func=lambda el: el)
 
 
 def crawl_pr(repo: str) -> Callable[[str, str, str, Callable], List[str]]:
@@ -155,7 +153,7 @@ def crawl_pr(repo: str) -> Callable[[str, str, str, Callable], List[str]]:
 
     print(repo)
     
-    return github_api(repo, component="pulls", func=lambda el: el)
+    return github_api(repo, component="pulls", params="state=all", func=lambda el: el)
 
 
 def crawl_issue(repo: str) -> Callable[[str, str, str, Callable], List[str]]:
@@ -163,7 +161,7 @@ def crawl_issue(repo: str) -> Callable[[str, str, str, Callable], List[str]]:
 
     print(repo)
 
-    return github_api(repo, component="issues", func=lambda el: el)
+    return github_api(repo, component="issues", params="state=all", func=lambda el: el)
 
 
 def crawl_cm(repo: str) -> List[str]:
@@ -266,8 +264,8 @@ def build_cm_info(repo: str) -> None:
         os.mkdir(folder_path)
     commit_path = os.path.join(folder_path, "commit.csv")
     # Commit path exists mean that this repo is processed so pass it
-    if os.path.exists(commit_path):
-        return None
+    # if os.path.exists(commit_path):
+    #     return None
     try:
         print("Start load commits")
         commits = crawl_cm(repo)
@@ -317,7 +315,8 @@ def build_pr_info(repo: str) -> None:
         pr_info = pd.DataFrame(pr_info)
         pr_info.to_csv(pr_info_path)
     except Exception as e:
-        print("Wrong implement at build_pr_info function")
+        print(e.message)
+        # print("Wrong implement at build_pr_info function")
         raise e
 
 
@@ -352,7 +351,7 @@ def make_data() -> None:
     # crawl_repos("raw_repos.csv")
     # filter_repos("valid_repos.csv", "valid_repos.csv")
     # traverse_repos("valid_repos.csv", clone_repos)
-    traverse_repos("valid_repos.csv", build_rn_info)
-    # traverse_repos("valid_repos.csv", build_cm_info)
+    # traverse_repos("valid_repos.csv", build_rn_info)
+    traverse_repos("valid_repos.csv", build_cm_info)
     # traverse_repos("valid_repos.csv", build_pr_info)
     # traverse_repos("valid_repos.csv", build_issue_info)
