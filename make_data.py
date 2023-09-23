@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from markdown import markdown
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
-from settings import ROOTDIR, HEADERS, VALID_RN_NUM, VALID_LINK_NUM
+from settings import ROOTDIR, HEADERS, VALID_RN_NUM, VALID_LINK_NUM, CM, PR, IS
 
 
 Time = TypeVar("Time")
@@ -45,9 +45,6 @@ def filter_repos(input_path: str, result_path: str) -> None:
         2. Release note written in English """
 
     candidates = pd.read_csv(input_path)
-    commit_link = r"https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/commit\/[a-zA-Z0-9]+"
-    pr_link = r"https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/pull\/[0-9]+"
-    issue_link = r"https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/issues\/[0-9]+"
 
     def validate(rn: Markdown) -> bool:
         if not rn:
@@ -67,7 +64,7 @@ def filter_repos(input_path: str, result_path: str) -> None:
         for a in all_a:
             try:
                 link = a["href"]
-                if re.match(commit_link, link) or re.match(pr_link, link) or re.match(issue_link, link):
+                if re.match(CM, link) or re.match(PR, link) or re.match(IS, link):
                     valid_link_num += 1
             except KeyError:
                 continue
@@ -254,6 +251,7 @@ def build_rn_info(repo: str) -> None:
         print("Wrong implement at build_rn_info")
         raise e
 
+
 def build_cm_info(repo: str) -> None:
     """ Get information of commits at repo and store into a csv file at data/[repo] """
 
@@ -329,6 +327,7 @@ def build_issue_info(repo: str) -> None:
     if not os.path.exists(folder_path):
         os.mkdir(folder_path)
     issue_info_path = os.path.join(folder_path, "issue_info.csv")
+   
     # Issue info path exists mean that this repo is processed so pass it
     if os.path.exists(issue_info_path):
         return None
@@ -352,6 +351,6 @@ def make_data() -> None:
     # filter_repos("valid_repos.csv", "valid_repos.csv")
     # traverse_repos("valid_repos.csv", clone_repos)
     # traverse_repos("valid_repos.csv", build_rn_info)
-    traverse_repos("valid_repos.csv", build_cm_info)
+    # traverse_repos("valid_repos.csv", build_cm_info)
     # traverse_repos("valid_repos.csv", build_pr_info)
-    # traverse_repos("valid_repos.csv", build_issue_info)
+    traverse_repos("valid_repos.csv", build_issue_info)
