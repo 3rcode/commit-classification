@@ -26,27 +26,38 @@ def organize_data():
             #     print(e.message)
             #     raise Exception("Problem while sorting release note info")
         
+            # try:
+            #     file_path = os.path.join(repo_path, "pr_info_sorted.csv")
+            #     if os.path.exists(file_path):
+            #         continue
+            #     try:
+            #         pr_info = pd.read_csv(os.path.join(repo_path, "pr_info.csv"), dtype="object")
+            #     except Exception:
+            #         pr_info = pd.read_csv(os.path.join(repo_path, "pr_info.csv"), 
+            #                               dtype="object", engine="python", on_bad_lines="skip")
+            #     pr_info["created_at"] = pd.to_datetime(pr_info["created_at"], errors="ignore")
+            #     pr_info = pr_info.sort_values(by="created_at", ascending=False, ignore_index=True)
+            #     pr_info.to_csv(file_path, index=False)       
+            # except Exception as e:
+            #     raise e
+            
             try:
+                file_path = os.path.join(repo_path, "issue_info_sorted.csv")
+                if os.path.exists(file_path):
+                    continue
                 try:
-                    pr_info = pd.read_csv(os.path.join(repo_path, "pr_info.csv"))
+                    issue_info = pd.read_csv(os.path.join(repo_path, "issue_info.csv"), dtype="object")
                 except Exception:
-                    pr_info = pd.read_csv(os.path.join(repo_path, "pr_info.csv"), engine="python", on_bad_lines="skip")
-                pr_info["created_at"] = pd.to_datetime(pr_info["created_at"], errors="ignore")
-                pr_info = pr_info.sort_values(by="created_at", ascending=False, ignore_index=True)
-                pr_info.to_csv(os.path.join(repo_path, "pr_info_sorted.csv"), index=False)       
+                    issue_info = pd.read_csv(os.path.join(repo_path, "issue_info.csv"), 
+                                          dtype="object", engine="python", on_bad_lines="skip")
+                issue_info["created_at"] = pd.to_datetime(issue_info["created_at"], errors="ignore")
+                issue_info = issue_info.sort_values(by="created_at", ascending=False, ignore_index=True)
+                issue_info.to_csv(file_path, index=False)       
             except Exception as e:
                 raise e
         except Exception as e:
             error_log.write(f"Repo {repo} encounter error: {e.message if hasattr(e, 'message') else e}\n")             
             continue    
     error_log.close()
-
-def valid(commit, latest, oldest):
-    """ Check commit time is between oldest release time and latest release time"""
-    return oldest.to_pydatetime().timestamp() <= commit.commit_time <= latest.to_pydatetime().timestamp()
-
-def filter_bot() -> None:
-    pass
-        
         
             
