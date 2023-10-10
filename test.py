@@ -48,7 +48,7 @@ def filter_topic():
 
 
 def filter_project_name():
-  pattern = re.compile(r'^.*(course)|(book)|(interview)|(example)|(dataset)|(datasets)|(roadmap)|(cheet-sheets)|(cheetsheet)|(sample)|(developer)|(-doc)|(-docs)|(-top)|(tutorial)|(awesome)|(must-watch)|(guide)|(interview)|(beginner)|(sample)|(leetcode)|(exercise)|(blog).*$')
+  pattern = re.compile(r'^.*(\bcourse\b)|(book)|(interview)|(example)|(dataset)|(datasets)|(roadmap)|(cheet-sheet)|(cheetsheet)|(sample)|(developer)|(-doc)|(-docs)|(-top)|(tutorial)|(awesome)|(must-watch)|(guide)|(interview)|(beginner)|(sample)|(leetcode)|(exercise)|(blog)|(china).*$')
 
   filtered_topic_repos = pd.read_csv("statistic/left_repos_topic.csv")["Repo"]
   print(len(filtered_topic_repos))
@@ -58,9 +58,11 @@ def filter_project_name():
   print(len(repos))
   filter_project_name = []
   for repo in repos:
-    
     project = repo.split('/')[1].lower()
-    if pattern.findall(project):
+    username = repo.split('/')[0]
+    if pattern.findall(project) or username in ["Tencent", "alibaba", "bilibili", "baidu", "pingcap","didi", 
+                                                "youzan", "bytedance", "XiaoMi", "Meituan-Dianping",
+                                                "NetEase"]:
       filter_project_name.append(repo)
   left_repos_project_name = [project for project in repos if project not in filter_project_name]
   filter_project_name = pd.DataFrame({"Repo": filter_project_name})
@@ -113,8 +115,8 @@ def check_chines_char(readme_content):
 def filter_chinese_project():
   repos = pd.read_csv("statistic/left_repos_project_name.csv")
   candidate = []
+  error = open("error_log.txt", mode="a+")
   for repo in repos["Repo"]:
-    
     print(repo)
     readme_content = None
     try:
@@ -126,13 +128,14 @@ def filter_chinese_project():
       response.raise_for_status()
       readme_content = response.content
     except Exception:
-      pass
+      error.write(f"Encounter error at repo: {repo}")  
     if readme_content:
       readme_content = readme_content.decode("utf-8")
       if check_chines_char(readme_content) >= 0.05:
         candidate.append(repo)
+  error.close()
   candidate = pd.DataFrame({"Repo": candidate})
   candidate.to_csv("statistic/candidate1.csv", index=False)
     
 
-filter_project_name()
+filter_chinese_project()
