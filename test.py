@@ -4,6 +4,7 @@ from settings import HEADERS
 import re
 from markdown import markdown
 from bs4 import BeautifulSoup
+from make_data import github_api
 pd.set_option('display.max_rows', None)
 
 def get_repo_topic():
@@ -36,9 +37,16 @@ def filter_topic():
   filtered = topics.loc[topics["Topic"].isin(["education", "algorithm", "algorithms", "awesome",
                                           "30dayofjavascript", "30daysofjavascript", "100dayofcode",
                                           "100joursdecode", "awesome-list", "best-practices",
-                                          "book", "learning", "lists", "checklist", "leetcode", "list",
-                                          "scikit-learn", "interview", "demo", "guidelines", 
-                                          "definition", "string-boot-examples", "docs", "udacity"])]
+                                          "book", "books", "learning", "lists", "checklist", "leetcode", 
+                                          "list", "scikit-learn", "interview", "demo", "guidelines",
+                                          "definition", "string-boot-examples", "docs", "udacity", 
+                                          "hacktoberfest", "markdown", "developer-portfolio", "badges-markdown",
+                                          "survey", "cheatsheet", "blog", "portfolio", "documentation", 
+                                          "examples", "china", "guide", "curated-list", "tutorials"
+                                          "ebook", "study-guide", "learn-to-code", "workshopper", "tips",
+                                          "tip-and-tricks", "educational", "collection", "writing",
+                                          "today-i-learned", "learn-in-public", "chinese-programmers",
+                                          "course", "classroom", "30-days-of-python"])]
   filtered_repos = set(filtered["Repo"].unique().tolist())
   left_repos = origin_repos - filtered_repos
   filtered_repos = pd.DataFrame({"Repo": list(filtered_repos)})
@@ -48,7 +56,7 @@ def filter_topic():
 
 
 def filter_project_name():
-  pattern = re.compile(r'^.*(\bcourse\b)|(book)|(interview)|(example)|(dataset)|(datasets)|(roadmap)|(cheet-sheet)|(cheetsheet)|(sample)|(developer)|(-doc)|(-docs)|(-top)|(tutorial)|(awesome)|(must-watch)|(guide)|(interview)|(beginner)|(sample)|(leetcode)|(exercise)|(blog)|(china).*$')
+  pattern = re.compile(r'^.*(\bcourse\b)|(book)|(interview)|(example)|(dataset)|(datasets)|(roadmap)|(cheat-sheet)|(cheatsheet)|(cheatsheets)|(sample)|(developer)|(-doc)|(-docs)|(-top)|(-demos)|(tutorial)|(awesome)|(must-watch)|(guide)|(interview)|(beginner)|(sample)|(leetcode)|(exercise)|(blog)|(china)|(learn)|(algorithms)|(lectures)|(workshop)|(tips)|(checklist).*$')
 
   filtered_topic_repos = pd.read_csv("statistic/left_repos_topic.csv")["Repo"]
   print(len(filtered_topic_repos))
@@ -72,33 +80,33 @@ def filter_project_name():
 
 
 def filter_specific_repo():
-  lst_repo = ["walter201230/Python",
-              "Asabeneh/30-Days-Of-Python",
-              "fangwei716/30-days-of-react-native",
-              "soapyigu/Swift-30-Projects",
-              "rwv/chinese-dos-games",
-              "LiuBoyu/blockchain",
-              "yinxin630/fiora",
-              "aosabook/500lines",
-              "shengxinjing/programmer-job-blacklist",
-              "yichengchen/clashX",
-              "zhiwehu/Python-programming-exercises",
-              "wangzheng0822/algo",
-              "allenwong/30DaysofSwift",
-              "peng-zhihui/XUAN",
-              "GokuMohandas/Made-With-ML",
-              "rougier/numpy-100",
-              "jackfrued/Python-100-Days",
-              "girliemac/a-picture-is-worth-a-1000-words",
-              "coells/100days",
-              "tangqiaoboy/iOSBlogCN",
-              "timqian/chinese-independent-blogs",
-              "greatfire/wiki",
-              "lining0806/PythonSpiderNotes",
-              "postmanlabs/postman-app-support",
-              "vicoyeh/pointers-for-software-engineers"
-            ]
+  specific_repos = pd.read_csv("statistic/specific_repos.csv")
+  specific_repos = specific_repos["Repo"].unique().tolist()
+  left_repos_project_name = pd.read_csv("statistic/left_repos_project_name.csv")["Repo"]
+  left_repos = [repo for repo in left_repos_project_name if repo not in specific_repos]
+  left_repos = pd.DataFrame({"Repo": left_repos})
+  left_repos.to_csv("statistic/left_repos.csv", index=False)
   
+
+def get_active_repo():
+  repos = pd.read_csv("statistic/left_repos.csv")
+  active_repo = []
+  error = open("error_log.txt", mode="a+")
+  for repo in repos["Repo"]:
+    print(repo)
+    url = f"https://api.github.com/repos/{repo}"
+    try:
+      response = requests.get(url, headers=HEADERS)
+      response.raise_for_status()
+      archive_status = response.json()["archived"]
+      if not archive_status:
+        active_repo.append(repo)
+    except Exception as e:
+      error.write(f"Encounter error at repo: {repo}\tMessage: {e}\n")
+  error.close()
+  active_repo = pd.DataFrame({"Repo": active_repo})
+  active_repo.to_csv("statistic/left_active_repos.csv", index=False)
+
 
 def check_chines_char(readme_content):
   html = markdown(readme_content)
@@ -113,7 +121,7 @@ def check_chines_char(readme_content):
 
 
 def filter_chinese_project():
-  repos = pd.read_csv("statistic/left_repos_project_name.csv")
+  repos = pd.read_csv("statistic/left_active_repos.csv")
   candidate = []
   error = open("error_log.txt", mode="a+")
   for repo in repos["Repo"]:
@@ -134,8 +142,49 @@ def filter_chinese_project():
       if check_chines_char(readme_content) >= 0.05:
         candidate.append(repo)
   error.close()
+  valid_repos = [repo for repo in repos["Repo"] if repo not in candidate]
   candidate = pd.DataFrame({"Repo": candidate})
-  candidate.to_csv("statistic/candidate1.csv", index=False)
-    
+  candidate.to_csv("statistic/candidate.csv", index=False)
+  valid_repos = pd.DataFrame({"Repo": valid_repos})
+  valid_repos.to_csv("statistic/valid_repos.csv", index=False)
 
-filter_chinese_project()
+
+def rn_in_project():
+  error_log = open("error_log.txt", "a+")
+  repos = pd.read_csv("statistic/valid_repos.csv")
+  has_release = {"Repo": [], "description": [], "created_at": [], "updated_at": [],
+                 "pushed_at": [], "language": [], "default_branch": [], "num release": []}
+  needed_info = ["description", "created_at", "updated_at", "pushed_at", "language", "default_branch"]
+  no_release = []
+  for repo in repos["Repo"]:
+    print(repo)
+    rns = None
+    repo_info = None
+    try:
+      url = f"https://api.github.com/repos/{repo}"
+      response = requests.get(url, headers=HEADERS)
+      response.raise_for_status()
+      response = response.json()
+      repo_info = {key: response[key] for key in needed_info}
+      rns = github_api(repo, "releases", func=lambda el: el)
+    except Exception as e:
+      error_log.write(f"Encounter error at repo: {repo}\tMessage: {e}\n")
+    if not rns:
+      no_release.append(repo)
+    else:
+      has_release["Repo"].append(repo)
+      for key in needed_info:
+        has_release[key].append(repo_info[key])
+      has_release["num release"].append(len(rns))
+      rns = pd.DataFrame(rns)
+      rns.to_csv(f"statistic/release/{repo.replace('/', '_')}.csv")
+    break
+
+  print("Number of no release project is:", len(no_release))
+  no_release = pd.DataFrame({"Repo": no_release})
+  no_release.to_csv("statistic/no_release.csv", index=False)
+  has_release = pd.DataFrame(has_release)
+  has_release.to_csv("statistic/has_release.csv", index=False)
+
+
+rn_in_project()

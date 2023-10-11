@@ -4,7 +4,7 @@ import re
 ROOTDIR = os.path.abspath(os.path.dirname(__file__))
 
 # HEADERS use for Github REST API
-github_token = "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"
+github_token = "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"
 HEADERS = {
     "Authorization": f"token {github_token}",   
     "Accept": "application/vnd.github.v3+json"
@@ -31,5 +31,5 @@ BOT = re.compile(fr'\b({"|".join(re.escape(name) for name in bot_names)})\b', re
 # VALID_RN_NUM and VALID_LINK_NUM use for assess if a repo can use to build dataset 
 # A repo is assessed valid for this problem if it satisfy condition that at least VALID_RN_NUM 
 # release note has at least VALID_LINK_NUM link to "change descriptor" (commit, issue, pull request)
-VALID_RN_NUM = 5
-VALID_LINK_NUM = 5
+VALID_RN_NUM = 1
+VALID_LINK_NUM = 1

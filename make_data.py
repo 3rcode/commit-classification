@@ -1,7 +1,7 @@
 """ Module provide functions to make data """
 import os
 import re
-from typing import List, Callable,  Tuple, TypeVar
+from typing import List, Callable, Tuple, TypeVar
 import requests
 import pygit2
 import pandas as pd
@@ -36,7 +36,7 @@ def crawl_repos(result_path: str) -> None:
     result.to_csv(result_path)
 
 
-def filter_repos(input_path: str, result_path: str) -> None:
+def filter_repos(input_path: str) -> None:
     """ Filter repo follow some criteria:
         1. Has at least VALID_RN_NUM has at least VALID_LINK_NUM links that refer to change descriptor
         2. Release note written in English """
@@ -47,82 +47,6 @@ def filter_repos(input_path: str, result_path: str) -> None:
         commits = re.findall(r"(\w+)(\s+(\w+))?:\s+(.*)", rn)
         issues = re.findall(r"\#(\d+)", rn)
         return (len(pull_requests) + len(commits) + len(issues) >= valid_link_num)
-        # html = markdown(rn)
-        # print(html)
-        # print("---------------------------------------------------")
-        # soup = BeautifulSoup(html, "html.parser")
-        # all_a = soup.find_all('a')
-        # print(len(all_a))
-        # valid_link_num = 0
-        # for a in all_a:
-        #     try:
-        #         link = a["href"]
-        #         if re.match(CM, link) or re.match(PR, link) or re.match(IS, link):
-        #             valid_link_num += 1
-        #     except KeyError:
-        #         continue
-        # if valid_link_num >= VALID_LINK_NUM:
-        #     return True
-        # else:
-        #     return False
-
-    # Read csv file (Set of repos with high stars in Github)   
-    candidates = pd.read_csv(input_path)
-    # Repo that has at least VALID_RN_NUM release note that has at least VALID_LINK_NUM cpilink
-    valid_repo = []
-    # Repo that has at least VALID_RN_NUM release notethat has at least 1 cpilink 
-    valid_repo_1 = []
-    # Repo that has release note number less than VALID_RN_NUM
-    small_release_num_repo = []
-    # Repo that has no release note
-    no_release_repo = []
-
-    no_link_repo = []
-
-    error_log = open("error_log.txt", "a+")
-    for candidate in candidates["Repo"]:
-        print(candidate)
-        try:
-            rns = github_api(candidate, "releases", func=lambda el: el["body"])
-        except Exception as e:
-            error_log.write(f"Repo {candidate} encounter error: {e.message if hasattr(e, 'message') else e}\n")
-        if not rns:
-            no_release_repo.append(candidate)
-            continue
-        if len(rns) < VALID_RN_NUM:
-            small_release_num_repo.append(candidate)
-        num_valid_rn = 0
-        num_valid_rn_1 = 0
-        for rn in rns:
-            try:
-                if validate(rn, VALID_LINK_NUM):
-                    num_valid_rn += 1
-                if validate(rn, 1):
-                    num_valid_rn_1 += 1
-            except Exception:
-                continue
-        if num_valid_rn_1 >= 1:
-            valid_repo_1.append(candidate)    
-        else:
-            no_link_repo.append(candidate)
-        if num_valid_rn >= VALID_RN_NUM:
-            valid_repo.append(candidate)
-        
-    print("Num valid repo:", len(valid_repo))
-    valid_repo = pd.DataFrame({"Repo": valid_repo})
-    valid_repo.to_csv(result_path)
-    print("Num valid repo 1:", len(valid_repo_1))
-    valid_repo_1 = pd.DataFrame({"Repo": valid_repo_1})
-    valid_repo_1.to_csv("statistic/valid_repo_1.csv")
-    print("Num repo has small release:", len(small_release_num_repo))
-    small_release_num_repo = pd.DataFrame({"Repo": small_release_num_repo})
-    small_release_num_repo.to_csv("statistic/small_release_num_repo.csv")
-    print("Num repo has no release:", len(no_release_repo))
-    no_release_repo = pd.DataFrame({"Repo": no_release_repo})
-    no_release_repo.to_csv("statistic/no_release_repo.csv")
-    print("Num repo has no link:", len(no_link_repo))
-    no_link_repo = pd.DataFrame({"Repo": no_link_repo})
-    no_link_repo.to_csv("statistic/no_link_repo.csv")
 
 
 def traverse_repos(repo_list_path: str, func: Callable[[str, str], None]) -> None:
@@ -377,7 +301,7 @@ def make_data() -> None:
         some rule for specific problem """
 
     # crawl_repos("raw_repos.csv")
-    filter_repos("raw_repos.csv", "statistic/valid_repos.csv")
+    filter_repos("statistic/valid_repos.csv")
     # traverse_repos("valid_repos.csv", clone_repos)
     # traverse_repos("valid_repos.csv", build_rn_info)
     # traverse_repos("valid_repos.csv", build_cm_info)
