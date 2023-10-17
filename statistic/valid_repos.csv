@@ -1945,7 +1945,6 @@ jaakkopasanen/AutoEq
 mislav/will_paginate
 microsoft/MMdnn
 skylot/jadx
-nginx/nginx
 ReactiveX/RxAndroid
 open-mmlab/mmdetection
 serverless/serverless
@@ -2977,7 +2976,6 @@ HarlonWang/AVLoadingIndicatorView
 audacity/audacity
 grpc/grpc
 google/traceur-compiler
-amueller/introduction_to_ml_with_python
 opencv/opencv_contrib
 qishibo/AnotherRedisDesktopManager
 jOOQ/jOOQ
@@ -3041,7 +3039,6 @@ robinmoisson/staticrypt
 tj/git-extras
 microsoft/FASTER
 bndw/wifi-card
-SimplifyJobs/Summer2024-Internships
 hugsy/gef
 jondot/hygen
 facebookresearch/Detectron
@@ -3065,7 +3062,6 @@ jakearchibald/idb
 facebook/react-native
 SheetJS/sheetjs
 microsoft/PowerToys
-microsoft/fluentui
 square/crossfilter
 sirupsen/logrus
 davatron5000/FitText.js

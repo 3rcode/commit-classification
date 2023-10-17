@@ -36,19 +36,6 @@ def crawl_repos(result_path: str) -> None:
     result.to_csv(result_path)
 
 
-def filter_repos(input_path: str) -> None:
-    """ Filter repo follow some criteria:
-        1. Has at least VALID_RN_NUM has at least VALID_LINK_NUM links that refer to change descriptor
-        2. Release note written in English """
-    def validate(rn: Markdown, valid_link_num: int) -> bool:
-        if not rn:
-            return False
-        pull_requests = re.findall(r"\[#(\d+)\]", rn)
-        commits = re.findall(r"(\w+)(\s+(\w+))?:\s+(.*)", rn)
-        issues = re.findall(r"\#(\d+)", rn)
-        return (len(pull_requests) + len(commits) + len(issues) >= valid_link_num)
-
-
 def traverse_repos(repo_list_path: str, func: Callable[[str, str], None]) -> None:
     """ This function do func in range of all repositories in repo list file"""
 
@@ -301,7 +288,6 @@ def make_data() -> None:
         some rule for specific problem """
 
     # crawl_repos("raw_repos.csv")
-    filter_repos("statistic/valid_repos.csv")
     # traverse_repos("valid_repos.csv", clone_repos)
     # traverse_repos("valid_repos.csv", build_rn_info)
     # traverse_repos("valid_repos.csv", build_cm_info)
