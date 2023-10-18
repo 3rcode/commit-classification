@@ -7,7 +7,9 @@ from bs4 import BeautifulSoup
 from make_data import github_api
 import matplotlib.pyplot as plt
 from typing import TypeVar
-
+import chart_studio.plotly as plotly
+import plotly.express as px
+from collections import defaultdict
 Markdown = TypeVar("Markdown")
 
 
@@ -257,39 +259,142 @@ def get_timebw2rn():
 #   no_body_release.to_csv("statistic/no_body_release.csv", index=False)
 
       
-# def get_no_link_release():
-#   def validate(rn, valid_link_num: int) -> bool:
-#     if pd.isna(rn):
-#         return False
-#     rn = str(rn)
-#     pull_requests = re.findall(r"\#[0-9]+\b", rn)
-#     commits = re.findall(r"\b[0-9a-f]{7,40}\b", rn)
-#     issues = re.findall(r"\#[0-9]+\b", rn)
-#     return (len(pull_requests) + len(commits) + len(issues) >= valid_link_num)
+def get_no_link_release(year=2023):
+  def validate(rn, valid_link_num: int) -> bool:
+    if pd.isna(rn):
+        return False
+    rn = str(rn)  
+    pull_requests = re.findall(r"https:\/\/github.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/pull\/[0-9]+", rn)
+    issues = re.findall(r"https:\/\/github.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/issues\/[0-9]+", rn)
+    pr_issue = re.findall(r"\#[0-9]+\b", rn)  
+    commits = re.findall(r"\b[0-9a-f]{7,40}\b", rn)
+    return ((len(pull_requests) + len(commits) + len(issues) >= valid_link_num) or
+            (len(pr_issue) + len(commits) >= valid_link_num))
 
-#   repos = pd.read_csv("statistic/has_release.csv")
-#   no_link_release = []
-#   for repo in repos["Repo"]:
-#     print(repo)
-#     rns = pd.read_csv(f"statistic/release/{repo.replace('/', '_')}.csv")  
-#     rns["created_year"] = pd.to_datetime(rns["created_at"]).dt.year  
-#     for i in range(len(rns)):
-#       if not validate(rns.loc[i, "body"], 1) and rns.loc[i, "created_year"] == 2023:
-#         no_link_release.append({"Repo": repo, 
-#                                 "tag_name": rns.loc[i, "tag_name"], 
-#                                 "created_at": rns.loc[i, "created_at"], 
-#                                 "link": rns.loc[i, "html_url"]})
-#   no_link_release = pd.DataFrame(no_link_release, columns=["Repo", "tag_name", "created_at", "link"])
-#   no_link_release.to_csv("statistic/no_link_release.csv", index=False)
+  repos = pd.read_csv("statistic/has_release_note.csv")
+  no_link_release = []
+  for repo in repos["Repo"]:
+    print(repo)
+    rns = pd.read_csv(f"statistic/release/{repo.replace('/', '_')}.csv")  
+    rns["created_year"] = pd.to_datetime(rns["created_at"]).dt.year  
+    for i in range(len(rns)):
+      if not validate(rns.loc[i, "body"], 1) and rns.loc[i, "created_year"] == year:
+        no_link_release.append({"Repo": repo, 
+                                "tag_name": rns.loc[i, "tag_name"], 
+                                "created_at": rns.loc[i, "created_at"], 
+                                "link": rns.loc[i, "html_url"]})
+  no_link_release = pd.DataFrame(no_link_release, columns=["Repo", "tag_name", "created_at", "link"])
+  no_link_release.to_csv(f"statistic/no_link_release_{year}.csv", index=False)
+
+def get_has_release_note_repo():
+  def filter_string(text):
+    """Filters the given string to remove all special escape sequences and links.
+
+    Args:
+      text: A string.
+
+    Returns:
+      A string with all special escape sequences and links removed.
+    """
+
+    # Remove all special escape sequences.
+    text = re.sub(r'\\(?:[abfnrtv]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4})$', '', text)
+
+    # Remove all links.
+    text = re.sub(r'^https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F]{2}))+$', '', text)
+
+    # Remove all empty lines.
+    text = re.sub(r'[\t\r\n\b\f\'\"\\]', '', text)
+
+    return text
+
+  has_release = pd.read_csv("statistic/has_release.csv")
+  has_release["has_rn"] = [False] * len(has_release)
+  for i in range(len(has_release)):
+    print(has_release.loc[i, "Repo"])
+    rns = pd.read_csv(f"statistic/release/{has_release.loc[i, 'Repo'].replace('/', '_')}.csv")["body"]
+    for rn in rns:
+      if not pd.isna(rn) and filter_string(rn):
+        has_release.loc[i, "has_rn"] = True
+        break
+  has_release_note = has_release[has_release["has_rn"]]
+  has_release_note.to_csv("statistic/has_release_note.csv", index=False)
+
 
 def run():
-  get_repo_topic()
+  # get_repo_topic()
   # filter_topic()
   # filter_project_name()
   # filter_specific_repo()
   # get_active_repo()
   # filter_chinese_project()
   # filter_repos()
+  # get_timebw2rn()
+  get_no_link_release()
+  # get_has_release_note_repo()
 
-run()
+
+def something():
+  num_link = 1
+  def filter_string(text):
+      """Filters the given string to remove all special escape sequences and links.
+
+      Args:
+        text: A string.
+
+      Returns:
+        A string with all special escape sequences and links removed.
+      """
+
+      # Remove all special escape sequences.
+      text = re.sub(r'\\(?:[abfnrtv]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4})$', '', text)
+
+      # Remove all links.
+      text = re.sub(r'^https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F]{2}))+$', '', text)
+
+      # Remove all empty lines.
+      text = re.sub(r'[\t\r\n\b\f\'\"\\]', '', text)
+
+      return text
+
+  def validate(rn, valid_link_num: int) -> bool:
+      if pd.isna(rn):
+          return False
+      rn = str(rn)  
+      pull_requests = re.findall(r"https:\/\/github.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/pull\/[0-9]+", rn)
+      issues = re.findall(r"https:\/\/github.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/issues\/[0-9]+", rn)
+      pr_issue = re.findall(r"\#[0-9]+\b", rn)  
+      commits = re.findall(r"\b[0-9a-f]{7,40}\b", rn)
+      return ((len(pull_requests) + len(commits) + len(issues) >= valid_link_num) or
+              (len(pr_issue) + len(commits) >= valid_link_num))
+
+  has_rn = pd.read_csv("statistic/has_release_note.csv")
+  release_time = defaultdict(lambda: [0, 0])
+  for repo in has_rn["Repo"]:
+    if repo == "moby/buildkit":
+      print(repo)
+      release_info = pd.read_csv(f"statistic/release/{repo.replace('/', '_')}.csv")[["body", "created_at"]]
+      release_info["created_at"] = pd.to_datetime(release_info["created_at"])
+      release_info["year"] = release_info["created_at"].dt.year
+      print(release_info.info())
+      # for i in range(len(release_info)):
+      #     if not pd.isna(release_info.loc[i, "body"]) and filter_string(release_info.loc[i, "body"]):
+      #         release_time[release_info.loc[i, "year"]][0] += 1
+      #         if validate(release_info.loc[i, "body"], num_link):
+      #             release_time[release_info.loc[i, "year"]][1] += 1    
+
+  result = defaultdict()
+  for year in release_time:
+      result[year] = round(release_time[year][1] / release_time[year][0] * 10000) / 100
+  df = pd.DataFrame({"Year": result.keys(), "Release note has link ratio": result.values()})
+  fig = px.bar(df, x="Year", y="Release note has link ratio")
+  fig.show()
+  # fig = plt.figure()
+  # axes = fig.add_axes([0 , 0, 1, 1])
+  # axes.bar(result.keys(), result.values())
+  # axes.set_title("Ratio of release has link to change description by year")
+  # plt.grid(visible=True, axis='y')
+  # axes
+
+something()
 

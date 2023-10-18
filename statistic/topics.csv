@@ -430,6 +430,7 @@ microsoft/terminal,command-line
 microsoft/terminal,console
 microsoft/terminal,contributions-welcome
 microsoft/terminal,good-first-issue
+microsoft/terminal,hacktoberfest
 microsoft/terminal,terminal
 microsoft/terminal,windows
 microsoft/terminal,windows-console
@@ -4024,6 +4025,7 @@ ReactiveX/RxSwift,swift
 ReactiveX/RxSwift,unidirectional
 swagger-api/swagger-ui,hacktoberfest
 swagger-api/swagger-ui,oas
+swagger-api/swagger-ui,open-source
 swagger-api/swagger-ui,openapi
 swagger-api/swagger-ui,openapi-specification
 swagger-api/swagger-ui,openapi3
@@ -4033,6 +4035,7 @@ swagger-api/swagger-ui,rest-api
 swagger-api/swagger-ui,swagger
 swagger-api/swagger-ui,swagger-api
 swagger-api/swagger-ui,swagger-js
+swagger-api/swagger-ui,swagger-oss
 swagger-api/swagger-ui,swagger-ui
 fastai/fastai,colab
 fastai/fastai,deep-learning
@@ -4243,7 +4246,6 @@ NativeScript/NativeScript,capacitor
 NativeScript/NativeScript,cross-platform
 NativeScript/NativeScript,flutter
 NativeScript/NativeScript,hacktoberfest
-NativeScript/NativeScript,ionic
 NativeScript/NativeScript,ios
 NativeScript/NativeScript,java
 NativeScript/NativeScript,javascript
@@ -4256,6 +4258,7 @@ NativeScript/NativeScript,svelte
 NativeScript/NativeScript,swift
 NativeScript/NativeScript,swiftui
 NativeScript/NativeScript,typescript
+NativeScript/NativeScript,visionpro
 NativeScript/NativeScript,vue
 Igglybuff/awesome-piracy,audiobooks
 Igglybuff/awesome-piracy,awesome-list
@@ -4784,6 +4787,7 @@ bevacqua/dragula,vanilla
 grafana/k6,es6
 grafana/k6,go
 grafana/k6,golang
+grafana/k6,hacktoberfest
 grafana/k6,javascript
 grafana/k6,load-generator
 grafana/k6,load-testing
@@ -7326,12 +7330,14 @@ source-foundry/Hack,hack
 source-foundry/Hack,ttf
 source-foundry/Hack,typeface
 source-foundry/Hack,web-fonts
+swagger-api/swagger-codegen,open-source
 swagger-api/swagger-codegen,openapi-specification
 swagger-api/swagger-codegen,openapi3
 swagger-api/swagger-codegen,rest
 swagger-api/swagger-codegen,rest-api
 swagger-api/swagger-codegen,swagger
 swagger-api/swagger-codegen,swagger-codegen
+swagger-api/swagger-codegen,swagger-oss
 zziz/pwc,code
 zziz/pwc,cvpr
 zziz/pwc,eccv
@@ -9368,6 +9374,7 @@ Tencent/omi,omiu
 Tencent/omi,shadow-dom
 Tencent/omi,signal
 Tencent/omi,tsx
+Tencent/omi,typescript
 Tencent/omi,web
 Tencent/omi,web-components
 Tencent/omi,webcomponents
@@ -11694,7 +11701,6 @@ rougier/numpy-100,exercises
 rougier/numpy-100,notebook
 rougier/numpy-100,numpy
 rougier/numpy-100,python
-gildas-lormeau/SingleFile,add-on
 gildas-lormeau/SingleFile,annotations
 gildas-lormeau/SingleFile,archive
 gildas-lormeau/SingleFile,archiver
@@ -11711,9 +11717,10 @@ gildas-lormeau/SingleFile,osint
 gildas-lormeau/SingleFile,puppeteer
 gildas-lormeau/SingleFile,screenshot
 gildas-lormeau/SingleFile,selenium
+gildas-lormeau/SingleFile,self-extracting
+gildas-lormeau/SingleFile,self-extracting-zip
 gildas-lormeau/SingleFile,snapshot
 gildas-lormeau/SingleFile,web-clipper
-gildas-lormeau/SingleFile,web-extension
 OWASP/owasp-mastg,android
 OWASP/owasp-mastg,android-application
 OWASP/owasp-mastg,compliancy-checklist
@@ -15025,6 +15032,7 @@ snowie2000/mactype,font-rendering
 snowie2000/mactype,mactype
 reactphp/reactphp,php
 reactphp/reactphp,reactphp
+rolling-scopes/rsschool-app,hacktoberfest
 debezium/debezium,apache-kafka
 debezium/debezium,cdc
 debezium/debezium,change-data-capture
@@ -15995,6 +16003,7 @@ chaitin/xray,vulnerability
 chaitin/xray,vulnerability-scanner
 chaitin/xray,xss
 swagger-api/swagger-editor,hacktoberfest
+swagger-api/swagger-editor,open-source
 swagger-api/swagger-editor,openapi-specification
 swagger-api/swagger-editor,openapi3
 swagger-api/swagger-editor,openapi31
@@ -16002,6 +16011,7 @@ swagger-api/swagger-editor,rest
 swagger-api/swagger-editor,rest-api
 swagger-api/swagger-editor,swagger
 swagger-api/swagger-editor,swagger-editor
+swagger-api/swagger-editor,swagger-oss
 swagger-api/swagger-editor,swagger-ui
 appbaseio/dejavu,appbaseio
 appbaseio/dejavu,chrome-extension
@@ -18590,6 +18600,7 @@ opsnull/follow-me-install-kubernetes-cluster,flanneld
 opsnull/follow-me-install-kubernetes-cluster,harbor
 opsnull/follow-me-install-kubernetes-cluster,kubernetes
 swagger-api/swagger-core,java
+swagger-api/swagger-core,open-source
 swagger-api/swagger-core,openapi
 swagger-api/swagger-core,openapi-specification
 swagger-api/swagger-core,openapi3
@@ -18597,6 +18608,7 @@ swagger-api/swagger-core,rest
 swagger-api/swagger-core,rest-api
 swagger-api/swagger-core,swagger
 swagger-api/swagger-core,swagger-api
+swagger-api/swagger-core,swagger-oss
 shekhargulati/52-technologies-in-2016,awesome
 shekhargulati/52-technologies-in-2016,awesome-list
 shekhargulati/52-technologies-in-2016,blog
@@ -18823,7 +18835,6 @@ deepstreamIO/deepstream.io,realtime
 deepstreamIO/deepstream.io,rpc
 deepstreamIO/deepstream.io,typescript
 deepstreamIO/deepstream.io,websocket
-gfx-rs/wgpu,dx11
 gfx-rs/wgpu,dx12
 gfx-rs/wgpu,gpu
 gfx-rs/wgpu,hacktoberfest
@@ -19538,6 +19549,7 @@ egametang/ET,mmorpg
 egametang/ET,server
 egametang/ET,unity
 egametang/ET,unity3d
+egametang/ET,web3
 timolins/react-hot-toast,notifications
 timolins/react-hot-toast,react
 timolins/react-hot-toast,snackbar
@@ -19966,6 +19978,7 @@ thunlp/WantWords,nlp
 thunlp/WantWords,reverse-dictionary
 thunlp/WantWords,word
 LMMS/lmms,daw
+LMMS/lmms,hacktoberfest
 LMMS/lmms,midi
 LMMS/lmms,music
 LMMS/lmms,songs
@@ -23175,6 +23188,10 @@ ansible-semaphore/semaphore,devops
 ansible-semaphore/semaphore,golang
 ansible-semaphore/semaphore,html
 ansible-semaphore/semaphore,javascript
+ppoffice/hexo-theme-icarus,hexo
+ppoffice/hexo-theme-icarus,hexo-theme
+ppoffice/hexo-theme-icarus,static-site
+ppoffice/hexo-theme-icarus,theme
 FreshRSS/FreshRSS,feed
 FreshRSS/FreshRSS,freshrss
 FreshRSS/FreshRSS,news-aggregator
@@ -23715,6 +23732,7 @@ arrow-kt/arrow,for-comprehension
 arrow-kt/arrow,fp-types
 arrow-kt/arrow,functional-data-structure
 arrow-kt/arrow,functional-programming
+arrow-kt/arrow,hacktoberfest
 arrow-kt/arrow,kotlin
 arrow-kt/arrow,kotlin-dsl
 arrow-kt/arrow,kotlin-libraries
@@ -26482,6 +26500,13 @@ mikepenz/Android-Iconics,material-ui
 mikepenz/Android-Iconics,meteocons
 mikepenz/Android-Iconics,mikepenz
 mikepenz/Android-Iconics,weather-icons
+dilame/instagram-private-api,instagram
+dilame/instagram-private-api,instagram-api
+dilame/instagram-private-api,instagram-client
+dilame/instagram-private-api,instagram-feed
+dilame/instagram-private-api,instagram-private-api
+dilame/instagram-private-api,instagram-scraper
+dilame/instagram-private-api,instagram-sdk
 ameizi/awesome-ios-animation,animations
 ameizi/awesome-ios-animation,ios-animation
 ameizi/awesome-ios-animation,swift-animation
@@ -26590,14 +26615,3 @@ alangpierce/sucrase,typescript
 spotify/docker-gc,docker
 spotify/docker-gc,garbage-collection
 spotify/docker-gc,shell
-dilame/instagram-private-api,instagram
-dilame/instagram-private-api,instagram-api
-dilame/instagram-private-api,instagram-client
-dilame/instagram-private-api,instagram-feed
-dilame/instagram-private-api,instagram-private-api
-dilame/instagram-private-api,instagram-scraper
-dilame/instagram-private-api,instagram-sdk
-ppoffice/hexo-theme-icarus,hexo
-ppoffice/hexo-theme-icarus,hexo-theme
-ppoffice/hexo-theme-icarus,static-site
-ppoffice/hexo-theme-icarus,theme
