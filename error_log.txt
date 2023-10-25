@@ -1,5 +1,1 @@
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
-Encounter error at repo: aosp-mirror/platform_frameworks_base	Message: 404 Client Error: Not Found for url: https://api.github.com/repos/aosp-mirror/platform_frameworks_base/readme
-Encounter error at repo: microsoft/language-server-protocol	Message: 404 Client Error: Not Found for url: https://api.github.com/repos/microsoft/language-server-protocol/readme
-----------------------------------------------------------------------------------------------------
+Encounter network related error at repo: be5invis/Iosevka	Message: Http Error Note Server Error

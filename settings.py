@@ -4,7 +4,7 @@ import re
 ROOTDIR = os.path.abspath(os.path.dirname(__file__))
 
 # HEADERS use for Github REST API
-github_token = "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"
+github_token = "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"
 HEADERS = {
     "Authorization": f"token {github_token}",   
     "Accept": "application/vnd.github.v3+json"

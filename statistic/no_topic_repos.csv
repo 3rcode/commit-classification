@@ -279,7 +279,6 @@ bvaughn/react-window
 apple/ml-stable-diffusion
 sass/sass
 angular-ui/bootstrap
-dogecoin/dogecoin
 janpaepke/ScrollMagic
 jupyter/jupyter
 mnielsen/neural-networks-and-deep-learning
@@ -324,7 +323,6 @@ louischatriot/nedb
 mozilla/send
 google/deepdream
 tensorflow/tfjs-models
-jerryjliu/llama_index
 signalapp/Signal-Desktop
 rstacruz/cheatsheets
 wkhtmltopdf/wkhtmltopdf
@@ -359,7 +357,6 @@ arut/nginx-rtmp-module
 scottbez1/smartknob
 php-fig/fig-standards
 gizak/termui
-RPCS3/rpcs3
 leisurelicht/wtfpython-cn
 qyuhen/book
 robbiehanson/CocoaAsyncSocket
